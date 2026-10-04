@@ -1,7 +1,56 @@
 # Multimodal Financial Assistant
 
-A grounded financial-policy assistant that extracts document content, retrieves relevant policy passages, and refuses to answer when the evidence is insufficient.
+A small, grounded assistant for financial-policy documents. It combines document extraction, vector retrieval, a configurable LLM, and an API/UI boundary. Unsupported questions are refused rather than guessed.
 
-Development is phased and tested incrementally. The archived implementation is reference-only; this repository is written independently.
+## What it demonstrates
 
-MIT. See LICENSE.
+- PDF text extraction with page provenance
+- ChromaDB semantic retrieval
+- Local sentence-transformer embeddings
+- Grounded LLM answers with an explicit refusal path
+- Image validation and vision-model input encoding
+- FastAPI service + Streamlit demo
+- SQLite interaction logging
+- Docker and GitHub Actions
+- Testable provider boundaries without requiring API credentials
+
+## Architecture
+
+`documents → extraction → embeddings → ChromaDB → retrieval → grounded answer`
+
+The Streamlit UI calls FastAPI. SQLite stores interaction history; it is deliberately not used as the vector database.
+
+See `docs/ARCHITECTURE.md`, `docs/INTERVIEW_QA.md`, and `docs/THREAT_MODEL.md` for design decisions and interview discussion.
+
+## Run
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+uvicorn financial_assistant.api:app --reload
+```
+
+In another shell:
+
+```bash
+streamlit run src/financial_assistant/app.py
+```
+
+Set `GROQ_API_KEY` for live answers. `GROQ_MODEL` and `GROQ_VISION_MODEL` are configurable.
+
+## Tests
+
+```bash
+pytest
+```
+
+The Chroma integration test is skipped locally if ChromaDB is unavailable. CI installs the declared dependencies and exercises the real Chroma round trip.
+
+## Honest scope
+
+This is a portfolio engineering project, not financial advice software. It does not execute payments, certify compliance, guarantee hallucination-free output, or provide production document governance. Image questions use a dedicated `/describe-image` vision endpoint. The persistent retrieval corpus remains text-first, so image-derived facts are not automatically added to ChromaDB. The image endpoint accepts bounded PNG/JPEG data URLs and sends them to the configured vision model.
+
+## License
+
+MIT. The repository includes the standard MIT license text in `LICENSE`.
