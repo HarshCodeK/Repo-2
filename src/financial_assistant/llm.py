@@ -25,18 +25,13 @@ class GroqClient:
     def answer(self, question: str, evidence: list[RetrievedChunk]) -> Answer:
         if not evidence:
             return Answer(supported=False, answer="I don't have enough evidence in the indexed documents to answer that.")
-        context = "
-
-".join(f"[{i+1}] {item.text}" for i, item in enumerate(evidence))
+        context = "\n\n".join(f"[{i+1}] {item.text}" for i, item in enumerate(evidence))
         payload = {
             "model": self.model,
             "temperature": 0,
             "messages": [
                 {"role": "system", "content": "You are a grounded financial-policy assistant. Use only the supplied evidence. Return JSON with exactly two fields: supported (boolean) and answer (string). Set supported=false when the evidence does not directly support the answer. Never invent policy details."},
-                {"role": "user", "content": f"Evidence:
-{context}
-
-Question: {question}"},
+                {"role": "user", "content": f"Evidence:\n{context}\n\nQuestion: {question}"},
             ],
             "response_format": {"type": "json_object"},
         }
