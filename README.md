@@ -54,3 +54,6 @@ This is a portfolio engineering project, not financial advice software. It does 
 ## License
 
 MIT. The repository includes the standard MIT license text in `LICENSE`.
+
+## Verification
+The default CI workflow runs unit tests, the Chroma retrieval integration test, source compilation, whitespace checks, and a Docker health smoke test.
