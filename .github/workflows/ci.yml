@@ -26,14 +26,15 @@ jobs:
           load: true
           tags: financial-assistant:ci
       - run: docker run -d --name financial-assistant -p 8000:8000 financial-assistant:ci
-      - run: python - <<'PY'
-        import time, urllib.request
-        for _ in range(20):
-            try:
-                assert urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status == 200
-                break
-            except Exception:
-                time.sleep(1)
-        else:
-            raise SystemExit('health check failed')
-        PY
+      - run: |
+          python - <<'PY'
+          import time, urllib.request
+          for _ in range(20):
+              try:
+                  assert urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).status == 200
+                  break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit('health check failed')
+          PY
