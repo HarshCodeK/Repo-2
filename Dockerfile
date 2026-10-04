@@ -3,6 +3,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app/src
 COPY pyproject.toml ./
 COPY src ./src
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch==2.5.1+cpu
 RUN pip install --no-cache-dir .
 COPY data ./data
 EXPOSE 8000
